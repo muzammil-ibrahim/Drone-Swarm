@@ -25,7 +25,7 @@ To see the demo [click here](https://linktodocumentation)
 
 ## To Setup
 
-Read the [Installation Guide](https://linktodocumentation)
+Read the [Installation Guide](https://github.com/muzammil-ibrahim/Drone-Swarm/wiki/Installation-Guide)
 
 
 
