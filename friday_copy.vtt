@@ -1,0 +1,31 @@
+WEBVTT
+
+
+
+00:00:20.000 --> 00:00:22.999  line:80%
+Drone 1 arm_and_takeoff?aTargetAltitude=11
+
+00:00:23.000 --> 00:00:25.999  line:80%
+Drone 2 arm_and_takeoff?aTargetAltitude=9
+
+00:00:27.000 --> 00:00:29.999  line:80%
+Drone 3 arm_and_takeoff?aTargetAltitude=7
+
+00:00:30.000 --> 00:00:32.499 line:80%
+Drone 4 arm_and_takeoff?aTargetAltitude=5
+
+00:00:43.000 --> 00:00:45.999  line:80%
+change_alt 08
+
+00:00:50.000 --> 00:00:55.499 line:80%
+kmit
+
+00:01:05.000 --> 00:01:08.222 line:80%
+change_alt 12
+
+00:01:12.000 --> 00:01:14.499 line:80%
+thnq
+
+00:01:20.000 --> 00:01:21.499 line:80%
+rtl
+

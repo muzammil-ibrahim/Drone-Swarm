@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Drone Control</title>
+    <style>
+        video::cue { font-size: 3rem; }
+        #statuslabels div {
+            background-color: grey;
+            width: 20%;
+            color: white;
+            text-align: center;
+            margin-right: 2px;
+        }
+        #statuslabels div p {
+            margin-top: 1px;
+            margin-bottom: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div style="display: flex;">
+            <div style="display: flex; width: 80%;" id="statuslabels">
+                <div><h2>D1</h2></div>
+                <div><h2>D2</h2></div>
+                <div><h2>D3</h2></div>
+                <div><h2>D4</h2></div>
+                <div><h2>D5</h2></div>
+            </div>
+            <div style="width: 20%;">
+                <button id="fetch_status">Check Condition</button>
+                <p id="order"></p>
+                <button id="check_pos">Check Order</button>
+            </div>
+        </div>
+        <div id="demo"></div>
+        <div id="demo1"></div>
+        <div style="display: flex;">
+            <div style="width: 50%;">
+                <video controls id="myVideo" src="MTS2.mp4" width="640" height="480">
+                    <track default kind="captions" srclang="en" src="friday_copy.vtt">
+                    <track default kind="captions" srclang="hi" src="friday_copy.vtt">
+                </video>
+            </div>
+        </div>
+        <div>
+            <h1>Control Your Drones</h1>
+            <div>
+                <label for="drone">Select Drone:</label>
+                <select id="drone" multiple>
+                    <option value="127.0.0.1:8080">Drone 1</option>
+                    <!-- <option value="192.168.1.103:8080">Drone 3</option>
+                    <option value="192.168.1.104:8080">Drone 4</option> -->
+                    <option value="all">Select All</option>
+                </select>
+            </div>
+            <div>
+                <button onclick="sendCommand('play_tune')">Play Tune</button>
+                <button onclick="getState()">Get State</button>
+            </div>
+            <div id="drone-states">
+                <!-- States will be displayed here -->
+            </div>
+        </div>
+    </div>
+    <script>
+        // fixed urls for each drone
+        const urls = [
+            "http://192.168.0.101:8080",
+            "http://192.168.0.102:8080",
+            "http://192.168.0.103:8080",
+            "http://192.168.0.104:8080"
+        ];
+
+        document.querySelector('track').oncuechange = function(e) {
+            const cues = document.querySelector('track').track.activeCues;
+            if (cues.length > 0) {
+                const cueText = cues[0].text;
+                if (cueText.includes("Drone")) {
+                    const index = parseInt(cueText.charAt(6)) - 1;
+                    const action = cueText.substring(8);
+                    console.log(`${urls[index]}/${action}`);
+                    fetch(`${urls[index]}/${action}`, { method: 'GET' });
+                } else if (cueText === "takeoff") {
+                    urls.forEach(drone => {
+                        fetch(`${drone}/arm_and_takeoff?aTargetAltitude=5`, { method: 'GET' });
+                    });
+                } else if (cueText.includes("change_alt")) {
+                    const index = parseInt(cueText.substring(11));
+                    urls.forEach(drone => {
+                        fetch(`${drone}/change_altitude?changealtitude=${index}`, { method: 'GET' });
+                    });
+                } else if (cueText === "rtl") {
+                    urls.forEach(drone => {
+                        fetch(`${drone}/rtl`, { method: 'GET' });
+                    });
+                } else {
+                    const message = cueText;
+                    urls.forEach((drone, i) => {
+                        const character = message[i] || ' ';
+                        const command = `ch=${character}`;
+                        fetch(`${drone}/${command}`, { method: 'GET' });
+                    });
+                }
+            }
+        };
+
+        let drones = [];
+
+        function calculateDistance(lat1, lon1, lat2, lon2, unit) {
+            const radlat1 = Math.PI * lat1 / 180;
+            const radlat2 = Math.PI * lat2 / 180;
+            const radlon1 = Math.PI * lon1 / 180;
+            const radlon2 = Math.PI * lon2 / 180;
+            const theta = lon1 - lon2;
+            const radtheta = Math.PI * theta / 180;
+            let dist = Math.sin(radlat1) * Math.sin(radlat2) +
+                       Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+            dist = Math.acos(dist);
+            dist = dist * 180 / Math.PI;
+            dist = dist * 60 * 1.1515;
+            if (unit === "K") dist *= 1.609344;
+            if (unit === "N") dist *= 0.8684;
+            return dist;
+        }
+
+        document.querySelector("#check_pos").onclick = () => {
+            drones = drones.filter(value => Object.keys(value).length !== 0);
+            drones.forEach((drone, index) => {
+                if (drone) {
+                    drone.distance = calculateDistance(
+                        drones[0].location.lat,
+                        drones[0].location.lon,
+                        drone.location.lat,
+                        drone.location.lon,
+                        "K"
+                    );
+                }
+            });
+            drones.sort((a, b) => a.distance - b.distance);
+            const sorted = checkSorted(drones);
+            document.getElementById("order").innerHTML = sorted ? "IN ORDER" : "NOT IN ORDER";
+            document.getElementById("order").style.color = sorted ? "green" : "red";
+            document.getElementById("order").style.fontWeight = "bold";
+        };
+
+        function checkSorted(arr) {
+            for (let i = 0; i < arr.length - 1; i++) {
+                if (arr[i].system_id > arr[i + 1].system_id) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        document.querySelector("#fetch_status").onclick = () => {
+            urls.forEach((url, index) => {
+                fetch(`${url}/state`).then(response => response.json()).then(data => {
+                    const div = `
+                        <p>System ID: <b>${data.system_id}</b></p>
+                        <p>Armable: <b>${data.is_armable}</b></p>
+                        <p>GPS count: <b>${data.gps}</b></p>
+                        <p>MODE: <b>${data.mode}</b></p>
+                        <p>Location: <b>${data.location.lat}, ${data.location.lon}</b></p>
+                    `;
+                    drones[data.system_id] = data;
+                    document.querySelector('#statuslabels').children[data.system_id - 1].innerHTML = div;
+                    document.querySelector('#statuslabels').children[data.system_id - 1].style.backgroundColor = "red";
+                });
+            });
+        };
+
+        function sendCommand(command) {
+            const selectedOptions = document.getElementById('drone').selectedOptions;
+            const selectedDrones = [];
+            for (let option of selectedOptions) {
+                if (option.value !== 'all') {
+                    selectedDrones.push(option.value);
+                }
+            }
+            if (selectedDrones.includes('all') || selectedDrones.length === 0) {
+                selectedDrones.length = 0;
+                document.querySelectorAll('#drone option').forEach(option => {
+                    if (option.value !== 'all') {
+                        selectedDrones.push(option.value);
+                    }
+                });
+            }
+            selectedDrones.forEach(drone => {
+                fetch(`http://${drone}/${command}`, { method: 'GET' })
+                    .then(response => response.text())
+                    .then(data => console.log(`Drone ${drone}: ${data}`));
+            });
+        }
+
+        function getState() {
+            const selectedOptions = document.getElementById('drone').selectedOptions;
+            const selectedDrones = [];
+            for (let option of selectedOptions) {
+                if (option.value !== 'all') {
+                    selectedDrones.push(option.value);
+                }
+            }
+            if (selectedDrones.includes('all') || selectedDrones.length === 0) {
+                selectedDrones.length = 0;
+                document.querySelectorAll('#drone option').forEach(option => {
+                    if (option.value !== 'all') {
+                        selectedDrones.push(option.value);
+                    }
+                });
+            }
+            selectedDrones.forEach(drone => {
+                fetch(`http://${drone}/state`, { method: 'GET' })
+                    .then(response => response.json())
+                    .then(data => {
+                        displayState(drone, data);
+                    });
+            });
+        }
+
+        function displayState(drone, data) {
+            const stateDiv = document.getElementById('drone-states');
+            const droneState = `
+                <div>
+                    <h3>State of ${drone}</h3>
+                    <p>Battery: ${data.battery}%</p>
+                    <p>GPS Fix Type: ${data.gps}</p>
+                    <p>Mode: ${data.mode}</p>
+                    <p>Is Armable: ${data.is_armable}</p>
+                    <p>Armed: ${data.armed}</p>
+                    <p>Altitude: ${data.altitude}m</p>
+                </div>
+            `;
+            stateDiv.innerHTML += droneState;
+        }
+    </script>
+</body>
+</html>

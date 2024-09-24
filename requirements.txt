@@ -1,0 +1,9 @@
+# This project was tested on python version 3.7.0
+# You can use a virtual environment
+# use pip install -r requirements.txt to install dependencies
+
+dronekit==2.9.2
+dronekit-sitl==3.3.0
+pymavlink
+cherrypy
+cherrypy_cors

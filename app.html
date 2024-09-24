@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drone Control</title>
+    <style>
+        /* Basic reset */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e0e7ff;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+            scroll-behavior: smooth; /* Smooth scrolling */
+            overflow-y: scroll; /* Allow vertical scrolling */
+        }
+
+        .top-button {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .top-button a {
+            padding: 12px 24px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #4f46e5;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .top-button a:hover {
+            background-color: #4338ca;
+        }
+
+        .top-button a:active {
+            background-color: #3730a3;
+            transform: scale(0.98);
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 700px;
+            overflow-y: auto; /* Ensure the container allows scrolling */
+        }
+
+        h1 {
+            text-align: center;
+            color: #4f46e5;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #4f46e5;
+        }
+
+        select, input, .drone-checkboxes {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            font-size: 16px;
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+
+        select:focus, input:focus, .drone-checkboxes:focus {
+            border-color: #4f46e5;
+            outline: none;
+            box-shadow: 0 0 5px rgba(79, 70, 229, 0.2);
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 25px;
+            justify-content: center;
+        }
+
+        .button-group button {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #4f46e5;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .button-group button:hover {
+            background-color: #4338ca;
+        }
+
+        .button-group button:active {
+            background-color: #3730a3;
+            transform: scale(0.98);
+        }
+
+        #drone-states {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f3f4f6;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            color: #1e293b;
+            max-height: 300px; /* Limit height to avoid excessive scrolling */
+            overflow-y: auto; /* Enable scrolling inside the drone states */
+        }
+
+        #drone-states h3 {
+            color: #4f46e5;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        #drone-states p {
+            margin-bottom: 8px;
+        }
+
+        .drone-checkboxes {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .drone-checkboxes label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .drone-checkboxes input[type="checkbox"] {
+            margin-right: 10px;
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-button">
+        <a href="DroneShow.html">DRONE SHOW</a>
+    </div>
+    <div class="container">
+        <h1>Drone Control</h1>
+        <div class="form-group">
+            <label>Select Drones:</label>
+            <div class="drone-checkboxes">
+                <label><input type="checkbox" value="127.0.0.1:8080"> Drone 1</label>
+                <label><input type="checkbox" value="172.168.0.54:8080"> Drone 2</label>
+                <label><input type="checkbox" value="172.168.0.177:8080"> Drone 3</label>
+                <label><input type="checkbox" value="172.168.0.148:8080"> Drone 4</label>
+                <label><input type="checkbox" id="select-all"> Select All</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="altitude">Altitude (meters):</label>
+            <input type="number" id="altitude" placeholder="Enter altitude">
+        </div>
+        <div class="form-group">
+            <label for="message">Display Message:</label>
+            <input type="text" id="message" placeholder="Enter a message">
+        </div>
+        <div class="button-group">
+            <button onclick="sendCommand('arm_and_takeoff?aTargetAltitude=')">Arm and Take Off</button>
+            <button onclick="displayMessage()">Display Message</button>
+            <button onclick="sendCommand('land')">Land</button>
+            <button onclick="sendCommand('rtl')">RTL</button>
+            <button onclick="sendCommand('clear_led')">Clear</button>
+            <button onclick="sendCommand('change_altitude?changealtitude=')">Change Altitude</button>
+            <button onclick="getState()">Get State</button>
+        </div>
+        <div id="drone-states">
+            <!-- States will be displayed here -->
+        </div>
+    </div>
+    <script>
+        document.getElementById('select-all').addEventListener('change', function () {
+            const checkboxes = document.querySelectorAll('.drone-checkboxes input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+
+        function getSelectedDrones() {
+            const selectedDrones = [];
+            document.querySelectorAll('.drone-checkboxes input[type="checkbox"]:not(#select-all):checked').forEach(checkbox => {
+                selectedDrones.push(checkbox.value);
+            });
+            return selectedDrones;
+        }
+
+        function sendCommand(command) {
+            const drones = getSelectedDrones();
+
+            if (command.includes('arm_and_takeoff') || command.includes('change_altitude')) {
+                const altitude = document.getElementById('altitude').value;
+                command += altitude;
+            }
+
+            drones.forEach(drone => {
+                fetch(`http://${drone}/${command}`, {
+                    method: 'GET',
+                })
+                .then(response => response.text())
+                .then(data => console.log(`Drone ${drone}: ${data}`))
+                .catch(error => console.error(`Error with Drone ${drone}:`, error));
+            });
+        }
+
+        function displayMessage() {
+            const message = document.getElementById('message').value;
+            const dronesToDisplay = getSelectedDrones();
+            const allDrones = [];
+
+            // Collect all drones
+            document.querySelectorAll('.drone-checkboxes input[type="checkbox"]:not(#select-all)').forEach(checkbox => {
+                allDrones.push(checkbox.value);
+            });
+
+            // Clear all displays first
+            allDrones.forEach(drone => {
+                fetch(`http://${drone}/clear_led`, {
+                    method: 'GET',
+                })
+                .then(response => response.text())
+                .then(data => console.log(`Drone ${drone} cleared: ${data}`))
+                .catch(error => console.error(`Error with Drone ${drone} clearing:`, error));
+            });
+
+            // Display the message on selected drones
+            dronesToDisplay.forEach((drone, index) => {
+                const character = message[index] || ' ';  // Assign a character to each drone or a space if the message is shorter than the number of drones
+                const command = `display_letter?ch=${character}`;
+                fetch(`http://${drone}/${command}`, {
+                    method: 'GET',
+                })
+                .then(response => response.text())
+                .then(data => console.log(`Drone ${drone}: ${data}`))
+                .catch(error => console.error(`Error with Drone ${drone}:`, error));
+            });
+        }
+ 
+        function getState() {
+            const drones = getSelectedDrones();
+            const stateDiv = document.getElementById('drone-states');
+            stateDiv.innerHTML = ``;
+            drones.forEach(drone => {
+                fetch(`http://${drone}/state`, {
+                    method: 'GET',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    displayState(drone, data);
+                })
+                .catch(error => console.error(`Error fetching state from Drone ${drone}:`, error));
+            });
+        }
+
+        function displayState(drone, data) {
+            const stateDiv = document.getElementById('drone-states');
+            const droneState = `
+                <div>
+                    <h3>State of ${drone}</h3>
+                    <p>Battery: ${data.battery}%</p>
+                    <p>GPS Fix Type: ${data.gps}</p>
+                    <p>Mode: ${data.mode}</p>
+                    <p>Is Armable: ${data.is_armable}</p>
+                    <p>Armed: ${data.armed}</p>
+                    <p>Altitude: ${data.altitude}m</p>
+                </div>
+            `;
+            stateDiv.innerHTML += droneState;
+        }
+    </script>
+</body>
+</html>
