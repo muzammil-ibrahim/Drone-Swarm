@@ -16,7 +16,8 @@ A simplified web-based system for managing and controlling a swarm of drones wit
 - ArduPilot(Autopilot system)
 
 ## Demo 
-
+- [Flight](https://drive.google.com/file/d/1gSky0t6sBkvvgiT1jKzckxEXcaSKLSse/view?usp=sharing)
+- [LED Display](https://drive.google.com/file/d/1gTpigMCGlo1wBcDVrkywhlGvC1dpDJGR/view?usp=sharing)
 
 ## How it works
 
