@@ -15,9 +15,8 @@ A simplified web-based system for managing and controlling a swarm of drones wit
 - CherryPy(Web Framework)
 - ArduPilot(Autopilot system)
 
-## Demo Video
+## Demo 
 
-To see the demo [click here](https://linktodocumentation)
 
 ## How it works
 
