@@ -1,12 +1,12 @@
 
 # DRONE SWARM
 
-A simplified web-based system for managing and controlling a swarm of drones with real-time communication and coordination between multiple drones.
+A simplified web-based system for managing and controlling a swarm of drones with real-time communication and coordination between multiple drones. 
 
 
 ## Features:
-- Manual Drone Swarm Control
-- Choreographed Drone Show
+- Manual Control of Drone Swarm: The web interface allows users to manually control the drones with commands like takeoff,land,display.
+- Choreographed Drone Show: Users can play a pre-configured video that triggers synchronized movements of the drones which generates the drone show.
 
 ## Technologies Used
 
