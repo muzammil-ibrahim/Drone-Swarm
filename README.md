@@ -21,10 +21,6 @@ https://github.com/user-attachments/assets/c75b8960-ccac-49c4-bcc8-db83c6a02814
 
 https://github.com/user-attachments/assets/87dc6b7e-397b-4e26-b21b-74f4d1c7c911
 
-## How it works
-
-[Read here](https://linktodocumentation)
-
 ## To Setup
 
 Read the [Installation Guide](https://github.com/muzammil-ibrahim/Drone-Swarm/wiki/Installation-Guide)
