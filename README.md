@@ -5,15 +5,15 @@ A simplified web-based system for managing and controlling a swarm of drones wit
 
 
 ## Features:
-- Manual Control of Drone Swarm: The web interface allows users to manually control the drones with commands like takeoff,land,display.
-- Choreographed Drone Show: Users can play a pre-configured video that triggers synchronized movements of the drones which generates the drone show.
+- **Manual Control of Drone Swarm:** The web interface allows users to manually control the drones with commands like takeoff,land,display.
+- **Choreographed Drone Show:** Users can play a pre-configured video that triggers synchronized movements of the drones which generates the drone show.
 
 ## Technologies Used
 
-- Python
-- DroneKit(API for drone control)
-- CherryPy(Web Framework)
-- ArduPilot(Autopilot system)
+- **Python**
+- **DroneKit** (API for drone control)
+- **CherryPy** (Web Framework)
+- **ArduPilot** (Autopilot system)
 
 ## Demo 
 - [Flight](https://drive.google.com/file/d/1gSky0t6sBkvvgiT1jKzckxEXcaSKLSse/view?usp=sharing)
@@ -30,7 +30,7 @@ Read the [Installation Guide](https://github.com/muzammil-ibrahim/Drone-Swarm/wi
 
 
 ## Note:
-- To set up the raspberrypi for controlling the LED panel refer the README in the whiterabbit directory [click here](https://github.com/muzammil-ibrahim/Drone-Swarm/blob/main/whiterabbit/README.md)
+- To set up the raspberrypi for controlling the LED panel refer the README in the whiterabbit folder [click here](https://github.com/muzammil-ibrahim/Drone-Swarm/blob/main/whiterabbit/README.md)
 
 
 ## Contributors
